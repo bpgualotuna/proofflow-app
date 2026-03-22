@@ -1,33 +1,112 @@
-const StatItem = ({ label, value, icon, color }) => (
-  <div className="premium-card p-6 border-none hover:shadow-xl hover:shadow-cyan-500/5 transition-all group overflow-hidden relative">
-    <div className="relative z-10 flex items-center justify-between mb-4">
-      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-        {label}
-      </p>
-      <span className="text-lg grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 transform group-hover:scale-110">
-        {icon}
-      </span>
-    </div>
-    <div className="relative z-10">
-      <h4 className={`text-3xl font-black tracking-tighter transition-colors ${color}`}>
-        {value}
-      </h4>
-    </div>
-    
-    {/* Subtle Inner Glow on Hover */}
-    <div className={`absolute -right-4 -bottom-4 w-24 h-24 blur-3xl opacity-0 group-hover:opacity-10 transition-opacity rounded-full bg-current ${color}`}></div>
-  </div>
+import { Card, CardContent, Typography, Box, Grow, Fab } from '@mui/material';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import AddIcon from '@mui/icons-material/Add';
+
+// eslint-disable-next-line react/prop-types
+const StatItem = ({ label, value, icon: IconComponent, color, delay }) => (
+  <Grow in={true} timeout={500 + delay * 100}>
+    <Card 
+      sx={{ 
+        position: 'relative',
+        overflow: 'hidden',
+        border: '2px solid',
+        borderColor: 'divider',
+        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        '&:hover': {
+          transform: 'translateY(-8px)',
+          boxShadow: `0 20px 40px -15px ${color}30`,
+          borderColor: color,
+        },
+      }}
+    >
+      <CardContent sx={{ p: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              fontWeight: 900, 
+              textTransform: 'uppercase', 
+              letterSpacing: '0.15em',
+              fontSize: '0.65rem',
+              color: 'text.secondary',
+            }}
+          >
+            {label}
+          </Typography>
+          <IconComponent sx={{ fontSize: 28, color, opacity: 0.3 }} />
+        </Box>
+        <Typography 
+          variant="h3" 
+          sx={{ 
+            fontWeight: 900, 
+            color,
+            letterSpacing: '-0.02em',
+          }}
+        >
+          {value}
+        </Typography>
+        <Box
+          sx={{
+            position: 'absolute',
+            right: -20,
+            bottom: -20,
+            width: 100,
+            height: 100,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${color}15 0%, transparent 70%)`,
+            pointerEvents: 'none',
+          }}
+        />
+      </CardContent>
+    </Card>
+  </Grow>
 );
 
-export default function StatsGrid({ stats }) {
+export default function StatsGrid({ stats, onOpenPaymentModal }) {
   const formatMoney = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
 
+  const statsData = [
+    { label: 'Ingresos Totales', value: formatMoney(2150), icon: TrendingUpIcon, color: '#06b6d4', delay: 0 },
+    { label: 'Pendientes', value: stats.pending, icon: HourglassEmptyIcon, color: '#f59e0b', delay: 1 },
+    { label: 'Aprobados', value: stats.approved, icon: CheckCircleIcon, color: '#10b981', delay: 2 },
+    { label: 'Rechazados', value: stats.rejected, icon: CancelIcon, color: '#ef4444', delay: 3 },
+  ];
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-      <StatItem label="Ingresos Totales" value={formatMoney(2150)} icon="💰" color="text-cyan-500 dark:text-cyan-400" />
-      <StatItem label="Pendientes" value={stats.pending} icon="⏳" color="text-amber-500 dark:text-amber-400" />
-      <StatItem label="Aprobados" value={stats.approved} icon="✅" color="text-emerald-500 dark:text-emerald-400" />
-      <StatItem label="Rechazados" value={stats.rejected} icon="❌" color="text-rose-500 dark:text-rose-400" />
-    </div>
+    <Box sx={{ position: 'relative', mb: 6 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 3 }}>
+        {statsData.map((stat, index) => (
+          <StatItem key={index} {...stat} />
+        ))}
+      </Box>
+      
+      {/* Botón flotante para nueva operación */}
+      <Fab
+        color="primary"
+        aria-label="nueva operación"
+        onClick={onOpenPaymentModal}
+        sx={{
+          position: 'fixed',
+          bottom: 32,
+          right: 32,
+          width: 64,
+          height: 64,
+          background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+          boxShadow: '0 8px 24px rgba(6, 182, 212, 0.4)',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)',
+            transform: 'scale(1.1)',
+            boxShadow: '0 12px 32px rgba(6, 182, 212, 0.5)',
+          },
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          zIndex: 1000,
+        }}
+      >
+        <AddIcon sx={{ fontSize: 32 }} />
+      </Fab>
+    </Box>
   );
 }

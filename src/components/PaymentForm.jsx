@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { Card, CardContent, TextField, Button, Typography, Box, CircularProgress } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 import { createPayment } from '../api/payments';
-import DashboardCard from './common/DashboardCard';
 
 export default function PaymentForm({ onCreated }) {
   const [formData, setFormData] = useState({ amount: '', description: '', createdBy: '' });
@@ -21,52 +22,90 @@ export default function PaymentForm({ onCreated }) {
   };
 
   return (
-    <DashboardCard title="Nueva Operación" icon="✨" className="mb-6">
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 ml-1">Monto</label>
-          <input
-            type="number"
-            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white rounded-xl px-4 py-3 focus:border-cyan-500 transition-all outline-none text-sm font-bold"
-            placeholder="0.00"
-            value={formData.amount}
-            required
-            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-          />
-        </div>
+    <Card sx={{ mb: 3, border: '2px solid', borderColor: 'divider' }}>
+      <CardContent sx={{ p: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              fontWeight: 900, 
+              textTransform: 'uppercase', 
+              letterSpacing: '0.2em',
+              fontSize: '0.65rem',
+              color: 'text.secondary',
+            }}
+          >
+            ✨ Nueva Operación
+          </Typography>
+        </Box>
+        
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+            <TextField
+              label="Monto"
+              type="number"
+              fullWidth
+              required
+              value={formData.amount}
+              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+              placeholder="0.00"
+              InputLabelProps={{ 
+                sx: { fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em' } 
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  fontWeight: 700,
+                },
+              }}
+            />
 
-        <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 ml-1">Descripción</label>
-          <input
-            type="text"
-            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white rounded-xl px-4 py-3 focus:border-cyan-500 transition-all outline-none text-sm"
-            placeholder="Concepto del pago..."
-            value={formData.description}
-            required
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          />
-        </div>
+            <TextField
+              label="Descripción"
+              fullWidth
+              required
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Concepto del pago..."
+              InputLabelProps={{ 
+                sx: { fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em' } 
+              }}
+            />
 
-        <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 ml-1">Solicitante</label>
-          <input
-            type="text"
-            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white rounded-xl px-4 py-3 focus:border-cyan-500 transition-all outline-none text-sm"
-            placeholder="Nombre completo"
-            value={formData.createdBy}
-            required
-            onChange={(e) => setFormData({ ...formData, createdBy: e.target.value })}
-          />
-        </div>
+            <TextField
+              label="Solicitante"
+              fullWidth
+              required
+              value={formData.createdBy}
+              onChange={(e) => setFormData({ ...formData, createdBy: e.target.value })}
+              placeholder="Nombre completo"
+              InputLabelProps={{ 
+                sx: { fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em' } 
+              }}
+            />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full btn-primary py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-cyan-500/10 mt-2"
-        >
-          {loading ? 'Procesando...' : 'Registrar Pago'}
-        </button>
-      </form>
-    </DashboardCard>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              disabled={loading}
+              endIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
+              sx={{
+                py: 1.5,
+                mt: 1,
+                fontSize: '0.7rem',
+                fontWeight: 900,
+                letterSpacing: '0.15em',
+                background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)',
+                },
+              }}
+            >
+              {loading ? 'Procesando...' : 'Registrar Pago'}
+            </Button>
+          </Box>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

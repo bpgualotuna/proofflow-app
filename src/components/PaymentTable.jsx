@@ -1,9 +1,53 @@
 import { useState } from 'react';
+import { 
+  Card, 
+  CardContent, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  IconButton, 
+  Chip,
+  Typography,
+  Box,
+  Tooltip
+} from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import LockIcon from '@mui/icons-material/Lock';
 import { updateStatus } from '../api/payments';
-import DashboardCard from './common/DashboardCard';
-import StatusBadge from './common/StatusBadge';
 
 const formatAmount = (num) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(num);
+
+const StatusChip = ({ status }) => {
+  const config = {
+    pending: { label: 'Pendiente', color: 'warning', icon: '⏳' },
+    approved: { label: 'Aprobado', color: 'success', icon: '✓' },
+    rejected: { label: 'Rechazado', color: 'error', icon: '✕' },
+  };
+  
+  const { label, color, icon } = config[status] || config.pending;
+  
+  return (
+    <Chip 
+      label={
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <span>{icon}</span>
+          <span style={{ fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.1em' }}>{label}</span>
+        </Box>
+      }
+      color={color}
+      size="small"
+      sx={{ 
+        borderRadius: 2,
+        fontWeight: 900,
+        textTransform: 'uppercase',
+      }}
+    />
+  );
+};
 
 export default function PaymentTable({ payments, onAction, onEventCaptured }) {
   const [loadingId, setLoadingId] = useState(null);
@@ -22,73 +66,155 @@ export default function PaymentTable({ payments, onAction, onEventCaptured }) {
   };
 
   return (
-    <DashboardCard title="Registro Consolidado" icon="📊" className="overflow-hidden">
-      <div className="overflow-x-auto -mx-8 -mb-8">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-slate-100 dark:bg-slate-900/50 border-y border-slate-200 dark:border-white/5 transition-colors">
-              <th className="px-8 py-4 text-[10px] uppercase font-black tracking-widest text-slate-400 dark:text-slate-500">Hash ID</th>
-              <th className="px-8 py-4 text-[10px] uppercase font-black tracking-widest text-slate-400 dark:text-slate-500">Concepto / Entidad</th>
-              <th className="px-8 py-4 text-[10px] uppercase font-black tracking-widest text-slate-400 dark:text-slate-500 text-right">Balance</th>
-              <th className="px-8 py-4 text-[10px] uppercase font-black tracking-widest text-slate-400 dark:text-slate-500 text-center">Estatus</th>
-              <th className="px-8 py-4 text-[10px] uppercase font-black tracking-widest text-slate-400 dark:text-slate-500 text-center">Gesti&oacute;n</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-white/5 transition-colors">
-            {payments.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="px-8 py-20 text-center text-[11px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest italic">
-                  No se detectan registros activos en la red
-                </td>
-              </tr>
-            ) : (
-              payments.map((p) => (
-                <tr key={p._id} className="hover:bg-cyan-500/[0.02] dark:hover:bg-cyan-500/[0.02] transition-colors group">
-                  <td className="px-8 py-5 font-mono text-[10px] text-slate-400 dark:text-slate-500">
-                    <span className="text-slate-300 dark:text-slate-700">#</span>{p._id.slice(-6).toUpperCase()}
-                  </td>
-                  <td className="px-8 py-5">
-                    <p className="text-xs font-bold text-slate-900 dark:text-slate-200 mb-0.5 transition-colors">{p.description}</p>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">UID: {p.createdBy}</p>
-                  </td>
-                  <td className="px-8 py-5 text-sm font-bold text-right text-cyan-600 dark:text-cyan-400 tabular-nums transition-colors">
-                    {formatAmount(p.amount)}
-                  </td>
-                  <td className="px-8 py-5 text-center">
-                    <StatusBadge status={p.status} />
-                  </td>
-                  <td className="px-8 py-5">
-                    <div className="flex justify-center gap-2">
-                      {p.status === 'pending' ? (
-                        <>
-                          <button
-                            onClick={() => handle(p._id, 'approved')}
-                            disabled={!!loadingId}
-                            className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all text-xs flex items-center justify-center shadow-lg shadow-emerald-500/5"
+    <Card sx={{ mb: 3, border: '2px solid', borderColor: 'divider' }}>
+      <CardContent sx={{ p: 0 }}>
+        <Box sx={{ p: 3, pb: 2 }}>
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              fontWeight: 900, 
+              textTransform: 'uppercase', 
+              letterSpacing: '0.2em',
+              fontSize: '0.65rem',
+              color: 'text.secondary',
+            }}
+          >
+            📊 Registro Consolidado
+          </Typography>
+        </Box>
+        
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ bgcolor: 'action.hover' }}>
+                <TableCell sx={{ fontWeight: 900, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Hash ID</TableCell>
+                <TableCell sx={{ fontWeight: 900, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Concepto / Entidad</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 900, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Balance</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 900, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Estatus</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 900, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Gestión</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {payments.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                    <Typography 
+                      variant="caption" 
+                      sx={{ 
+                        fontWeight: 700, 
+                        textTransform: 'uppercase', 
+                        letterSpacing: '0.15em',
+                        color: 'text.disabled',
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      No se detectan registros activos en la red
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                payments.map((p) => (
+                  <TableRow 
+                    key={p._id} 
+                    sx={{ 
+                      '&:hover': { bgcolor: 'action.hover' },
+                      transition: 'background-color 0.2s',
+                    }}
+                  >
+                    <TableCell>
+                      <Typography 
+                        variant="caption" 
+                        sx={{ 
+                          fontFamily: 'monospace', 
+                          fontSize: '0.7rem',
+                          color: 'text.secondary',
+                        }}
+                      >
+                        #{p._id.slice(-6).toUpperCase()}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.8rem', mb: 0.5 }}>
+                        {p.description}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+                        UID: {p.createdBy}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          fontWeight: 700, 
+                          color: 'primary.main',
+                          fontFamily: 'monospace',
+                        }}
+                      >
+                        {formatAmount(p.amount)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <StatusChip status={p.status} />
+                    </TableCell>
+                    <TableCell align="center">
+                      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                        {p.status === 'pending' ? (
+                          <>
+                            <Tooltip title="Aprobar">
+                              <IconButton
+                                size="small"
+                                onClick={() => handle(p._id, 'approved')}
+                                disabled={!!loadingId}
+                                sx={{
+                                  bgcolor: 'success.main',
+                                  color: 'white',
+                                  '&:hover': { bgcolor: 'success.dark' },
+                                  width: 32,
+                                  height: 32,
+                                }}
+                              >
+                                <CheckCircleIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Rechazar">
+                              <IconButton
+                                size="small"
+                                onClick={() => handle(p._id, 'rejected')}
+                                disabled={!!loadingId}
+                                sx={{
+                                  bgcolor: 'error.main',
+                                  color: 'white',
+                                  '&:hover': { bgcolor: 'error.dark' },
+                                  width: 32,
+                                  height: 32,
+                                }}
+                              >
+                                <CancelIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </>
+                        ) : (
+                          <IconButton
+                            size="small"
+                            disabled
+                            sx={{
+                              bgcolor: 'action.disabledBackground',
+                              width: 32,
+                              height: 32,
+                            }}
                           >
-                            ✓
-                          </button>
-                          <button
-                            onClick={() => handle(p._id, 'rejected')}
-                            disabled={!!loadingId}
-                            className="h-8 w-8 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-500 hover:bg-rose-500 hover:text-white transition-all text-xs flex items-center justify-center shadow-lg shadow-rose-500/5"
-                          >
-                            ✕
-                          </button>
-                        </>
-                      ) : (
-                        <span className="h-8 w-8 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-slate-300 dark:text-slate-700 flex items-center justify-center text-[10px] transition-colors">
-                          L
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-    </DashboardCard>
+                            <LockIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </CardContent>
+    </Card>
   );
 }

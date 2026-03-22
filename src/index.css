@@ -12,8 +12,8 @@
   --accent-danger: #ef4444;
   
   /* — Borders & Depth — */
-  --border-subtle: rgba(0, 0, 0, 0.05);
-  --border-strong: rgba(0, 0, 0, 0.1);
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.12);
   --glow-accent: rgba(6, 182, 212, 0.1);
   --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   
@@ -32,8 +32,8 @@
   --accent-secondary: #3b82f6;
   
   /* — Borders & Depth — */
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  --border-strong: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.12);
   --glow-accent: rgba(34, 211, 238, 0.15);
   --card-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5);
   
@@ -60,7 +60,8 @@ body {
   /* Dynamic Background Texture */
   background-image: 
     radial-gradient(at 0% 0%, var(--glow-accent) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, var(--glow-accent) 0px, transparent 50%);
+    radial-gradient(at 100% 100%, var(--glow-accent) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(6, 182, 212, 0.03) 0px, transparent 70%);
 }
 
 h1, h2, h3, h4, .font-heading {
@@ -72,7 +73,7 @@ h1, h2, h3, h4, .font-heading {
 .premium-card {
   background-color: var(--bg-card);
   backdrop-filter: blur(12px);
-  border: 1px solid var(--border-subtle);
+  border: 2px solid var(--border-strong);
   border-radius: 16px;
   box-shadow: var(--card-shadow);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -81,7 +82,7 @@ h1, h2, h3, h4, .font-heading {
 .premium-card:hover {
   border-color: var(--accent-primary);
   transform: translateY(-2px);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
 }
 
 /* Custom Scrollbar */
@@ -94,4 +95,70 @@ h1, h2, h3, h4, .font-heading {
   max-width: 1400px;
   margin: 0 auto;
   padding: 40px;
+}
+
+/* Animaciones profesionales */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Mejoras de accesibilidad y UX */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Transiciones suaves globales */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Mejora de rendimiento para animaciones */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

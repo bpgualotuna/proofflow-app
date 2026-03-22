@@ -36,6 +36,12 @@
   gap: 40px;
 }
 
+@media (max-width: 1280px) {
+  .dashboard-sections {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* — TopBar Refinement — */
 .top-nav {
   display: flex;

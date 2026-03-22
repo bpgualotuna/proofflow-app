@@ -1,3 +1,5 @@
+import { Box, Typography, Avatar, Chip } from '@mui/material';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ThemeToggle from '../common/ThemeToggle';
 
 export default function TopBar({ theme, toggleTheme }) {
@@ -9,32 +11,99 @@ export default function TopBar({ theme, toggleTheme }) {
   });
 
   return (
-    <header className="flex items-center justify-between mb-8 py-2">
-      <div className="space-y-1">
-        <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-cyan-500">
+    <Box 
+      sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        mb: 4,
+        py: 1,
+      }}
+    >
+      <Box>
+        <Typography 
+          variant="caption" 
+          sx={{ 
+            fontWeight: 900, 
+            textTransform: 'uppercase', 
+            letterSpacing: '0.3em',
+            fontSize: '0.65rem',
+            color: 'primary.main',
+            display: 'block',
+            mb: 0.5,
+          }}
+        >
           Terminal de Control
-        </h2>
-        <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 capitalize">
+        </Typography>
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            fontWeight: 700,
+            fontSize: '0.85rem',
+            color: 'text.secondary',
+            textTransform: 'capitalize',
+          }}
+        >
           {today}
-        </h3>
-      </div>
+        </Typography>
+      </Box>
 
-      <div className="flex items-center gap-8">
-        {/* Theme Toggle integrated elegantly */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
 
-        <div className="flex items-center gap-4 group cursor-pointer">
-          <div className="text-right hidden sm:block">
-            <p className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-wider">M. Administrador</p>
-            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">Privilegios Root</p>
-          </div>
-          <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-slate-200 to-slate-400 p-[1px] shadow-lg transition-transform group-hover:scale-105">
-            <div className="h-full w-full rounded-2xl bg-slate-900 dark:bg-black flex items-center justify-center text-xs font-black text-white uppercase">
-              PF
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 2,
+            cursor: 'pointer',
+            transition: 'transform 0.2s',
+            '&:hover': {
+              transform: 'scale(1.02)',
+            },
+          }}
+        >
+          <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                fontWeight: 900,
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                fontSize: '0.7rem',
+                color: 'text.primary',
+                display: 'block',
+              }}
+            >
+              M. Administrador
+            </Typography>
+            <Chip 
+              label="Privilegios Root"
+              size="small"
+              icon={<AdminPanelSettingsIcon />}
+              sx={{ 
+                height: 20,
+                fontSize: '0.6rem',
+                fontWeight: 700,
+                mt: 0.5,
+              }}
+            />
+          </Box>
+          <Avatar 
+            sx={{ 
+              width: 48, 
+              height: 48,
+              background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+              fontWeight: 900,
+              fontSize: '0.9rem',
+              letterSpacing: '0.05em',
+              boxShadow: '0 4px 12px rgba(6, 182, 212, 0.3)',
+            }}
+          >
+            PF
+          </Avatar>
+        </Box>
+      </Box>
+    </Box>
   );
 }
