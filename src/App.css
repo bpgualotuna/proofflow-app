@@ -9,7 +9,7 @@
 
 .main-content {
   flex: 1;
-  margin-left: 300px; /* Aligned with new Ultra-Spacious Sidebar width */
+  margin-left: 300px; /* Aligned with refactored Sidebar width */
   padding: 40px 60px;
   display: flex;
   flex-direction: column;
